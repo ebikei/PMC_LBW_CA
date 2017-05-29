@@ -18,7 +18,7 @@ earth.dist<-function (long1, lat1, long2, lat2){
 	d <- R * c
 	return(d)
 }
-
+ 
 ## PM10
 load('PM10_81102_Cleaned.RData')#PM10_81102_Cleaned
 df=select(PM10_81102_Cleaned,FIPSPOC,Date.Local,PM10,Latitude,Longitude)
@@ -48,7 +48,7 @@ output2=distinct(output,Distance,N,Cor,.keep_all=TRUE) %>%
 
 fig1=ggplot(output2,aes(Distance,Cor))+
 	geom_point(aes(size=N))+
-	coord_cartesian(ylim=c(0,1),xlim=c(0,50))+
+	coord_cartesian(ylim=c(-0.25,1),xlim=c(0,50))+
 	ggtitle(expression(paste(PM[10]," Dispersion in CA")))+
 	theme_bw()
  
@@ -81,7 +81,7 @@ output2=distinct(output,Distance,N,Cor,.keep_all=TRUE) %>%
 
 fig2=ggplot(output2,aes(Distance,Cor))+
 	geom_point(aes(size=N))+
-	coord_cartesian(ylim=c(0,1))+
+	coord_cartesian(ylim=c(-0.25,1),xlim=c(0,50))+
 	ggtitle(expression(paste(PM[2.5]," Dispersion in CA")))+
 	theme_bw()
 
@@ -114,7 +114,7 @@ output2=distinct(output,Distance,N,Cor,.keep_all=TRUE) %>%
 
 fig3=ggplot(output2,aes(Distance,Cor))+
 	geom_point(aes(size=N))+
-	coord_cartesian(ylim=c(0,1),xlim=c(0,50))+
+	coord_cartesian(ylim=c(-0.25,1),xlim=c(0,50))+
 	ggtitle(expression(paste(PM[10-2.5]," Dispersion in CA")))+
 	theme_bw()
 
