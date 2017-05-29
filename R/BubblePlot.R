@@ -1,7 +1,8 @@
 x<-c("dplyr","ggplot2","gridExtra","grid")
 lapply(x, require, character.only=T)
 #setwd('F:\\Research\\PMCoarse_CATLBW\\Data')
-setwd('C:\\Users\\ebike\\OneDrive\\Documents\\Research\\PMC_LBW_CA')
+setwd('F:\\Research\\PMC_LBW_CA\\PMC_LBW_CA\\Data')
+#setwd('C:\\Users\\ebike\\OneDrive\\Documents\\Research\\PMC_LBW_CA')
 
 earth.dist<-function (long1, lat1, long2, lat2){
 	rad <- pi/180
