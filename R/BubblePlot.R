@@ -50,7 +50,7 @@ fig1=ggplot(output2,aes(Distance,Cor))+
 	coord_cartesian(ylim=c(0,1),xlim=c(0,50))+
 	ggtitle(expression(paste(PM[10]," Dispersion in CA")))+
 	theme_bw()
-
+ 
 ## PM2.5
 load('PM25_88101_Cleaned.RData')#PM25_88101_Cleaned
 df=select(PM25_88101_Cleaned,FIPSPOC,Date.Local,PM25,Latitude,Longitude)
