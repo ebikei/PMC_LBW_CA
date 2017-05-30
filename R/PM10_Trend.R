@@ -1,11 +1,11 @@
 x<-c("dplyr","ggplot2","gridExtra","grid")
 lapply(x, require, character.only=T)
 #setwd('F:\\Research\\PMCoarse_CATLBW\\Data')
-#setwd('F:\\Research\\PMC_LBW_CA\\PMC_LBW_CA\\Data')
-setwd('C:\\Users\\ebike\\OneDrive\\Documents\\Research\\PMC_LBW_CA\\Data')
+setwd('F:\\Research\\PMC_LBW_CA\\PMC_LBW_CA')
+#setwd('C:\\Users\\ebike\\OneDrive\\Documents\\Research\\PMC_LBW_CA\\Data')
 
 ## PM10
-load('PM10_81102_Cleaned.RData')#PM10_81102_Cleaned
+load('Data//PM10_81102_Cleaned.RData')#PM10_81102_Cleaned
 PM10.DF=mutate(PM10_81102_Cleaned,FIPS_C=substr(FIPSPOC,1,9)) %>%
     filter(PM10<500) %>%
     group_by(Date.Local) %>%
@@ -50,7 +50,8 @@ filter(PM10_81102_Cleaned,PM10<500) %>%
 MonList=unique(PM10_81102_Cleaned$FIPSPOC)
 p=list()
 
-pdf("C://Users//ebike//OneDrive//Documents//Research//PMC_LBW_CA//Results//PM10_plots.pdf")
+#pdf("C://Users//ebike//OneDrive//Documents//Research//PMC_LBW_CA//Results//PM10_plots.pdf")
+pdf("Results//PM10_plots.pdf")
 for (i in 1:length(MonList)){
 PM10.DF=filter(PM10_81102_Cleaned,FIPSPOC==MonList[i]) %>%
   mutate(FIPS_C=substr(FIPSPOC,1,9)) %>%
@@ -61,7 +62,7 @@ PM10.DF=filter(PM10_81102_Cleaned,FIPSPOC==MonList[i]) %>%
 title=substitute(paste(PM[10],' Trend from 2001 to 2013 in California at ',nn1),list(nn1=MonList[i]))
 Y_title=substitute(paste(PM[10],' Value'))
 ylims=c(floor(min(PM10.DF$PM10)), ceiling(max(PM10.DF$PM10)))
-Legend=data.frame(PM10.DF[!duplicated(PM10.DF$MonthName),c('MonthName','MonthDay_num')])
+#Legend=data.frame(PM10.DF[!duplicated(PM10.DF$MonthName),c('MonthName','MonthDay_num')])
 
 #ggplot(PM10.DF, aes(Date.Local,PM10)) +
 #  geom_point(na.rm=TRUE)+
