@@ -50,6 +50,7 @@ filter(PM10_81102_Cleaned,PM10<500) %>%
 MonList=unique(PM10_81102_Cleaned$FIPSPOC)
 p=list()
 
+pdf("C://Users//ebike//OneDrive//Documents//Research//PMC_LBW_CA//Results//PM10_plots.pdf")
 for (i in 1:length(MonList)){
 PM10.DF=filter(PM10_81102_Cleaned,FIPSPOC==MonList[i]) %>%
   mutate(FIPS_C=substr(FIPSPOC,1,9)) %>%
@@ -75,9 +76,10 @@ Legend=data.frame(PM10.DF[!duplicated(PM10.DF$MonthName),c('MonthName','MonthDay
     theme_bw()+
     theme(plot.title=element_text(hjust = 0.5))
   p[[i]]=Plot_gg_PM10
- # rm(PM10.DF,Plot_gg_PM10)
+  print(Plot_gg_PM10)
+ rm(PM10.DF,Plot_gg_PM10)
 }
-
+dev.off()
 
 test=do.call(arrangeGrob,c(p,nrow=10,ncol=10))
 
