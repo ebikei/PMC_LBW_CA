@@ -1,0 +1,186 @@
+---
+title: "Plotting PMC Trend"
+output: html_notebook
+---
+
+
+```{r, include=FALSE}
+library(ggplot2)
+#setwd('C:\\Users\\kebisu\\Documents\\Research\\PMCoarse_TLBWCA\\Data')
+setwd('F:\\Research\\PMC_LBW_CA\\PMC_LBW_CA')
+load('Data\\PMC_DF_20170602.RData')#PMC_DF
+```
+For now, ignore extreme values.
+Make Plot for Year-Month Trend by using Whole California Data
+```{r, echo=FALSE}
+DF=aggregate(PMC_Value~Date,mean,data=PMC_DF)
+DF$MonthDay_num=as.numeric(format(DF$Date,'%j'))
+DF$MonthName=factor(months(DF$Date,abbreviate=TRUE))
+DF$Period=cut(as.numeric(substr(DF$Date,1,4)),c(2001,2005,2009,2014),
+              labels=c('2001-2004','2005-2008','2009-2013'),right=FALSE,include.highest=TRUE)
+```
+#ggPlot
+```{r}
+ggplot(DF,aes(Date,PMC_Value)) +
+     geom_point(na.rm=TRUE)+
+     theme_bw() #This option is my preference; I like black/white plot
+```
+
+
+Let's put some trend line
+```{r}
+ggplot(DF,aes(Date,PMC_Value)) +
+     geom_point(na.rm=TRUE)+
+     theme_bw()+
+     geom_smooth(span=0.05,method='loess',size=1.5)+
+	coord_cartesian(ylim=c(0,50))+
+     theme_bw()
+```
+* Span number is degree of somoothness. The larger, the smoother. 
+* There is some seasonal trend, but still difficult to see how much PMC improves (or getting worse?) over decade.
+     + Overall, it is improving.  
+
+Now Let's make a more fancy plot
+
+#ggplot with smooth line
+```{r}
+head(DF) #Check 
+Plot=ggplot(data=DF,aes_string(x="MonthDay_num",y="PMC_Value",col="Period"))+
+	geom_smooth(span=0.4,method='loess',size=1.5,se=FALSE)+
+     theme_bw()
+Plot
+```
+
+#Some cosmetic modification
+```{r}
+title=substitute(paste(PM[10-2.5],' Trend from 1990 to 2015 in US'))
+Y_title=substitute(paste(PM[10-2.5],' Value'))
+Legend=data.frame(DF[!duplicated(DF$MonthName),c('MonthName','MonthDay_num')])
+
+Plot2=Plot+
+     scale_x_continuous('Month',breaks=Legend$MonthDay_num,labels=Legend$MonthName,expand=c(0,0))+
+	scale_y_continuous(Y_title)+
+	ggtitle(title)+
+	coord_cartesian(ylim=c(0,35))+
+     theme(plot.title=element_text(hjust = 0.5))
+Plot2
+```
+
+* Adding points (not recommended)
+It is quite difficult to see this pattern from scatter plot
+```{r}
+Plot2+geom_point()
+```
+
+# Issue regarding character/number/date
+```{r, include=FALSE}
+test=PMC_DF[substr(PMC_DF$FIPS_C,1,5)=='06037',]
+test$YM=paste(substr(test$Date,1,4),substr(test$Date,6,7),sep='')
+test2=aggregate(PMC_Value~YM+FIPS_C,mean,data=test)
+#In this output, YM is defined as character
+str(test2$YM)
+#Let's plot as it is
+ggplot(test2,aes(YM,PMC_Value)) +
+     geom_point(na.rm=TRUE)+
+     theme_bw()+
+     geom_smooth(span=0.05,method='loess',size=1.5)+
+	coord_cartesian(ylim=c(0,50))+
+     theme_bw()
+```
+* Output look OK, but x-axis is treated as categorical; not continuous variable. I think this is why they don't generate smooth line
+
+* Now let's change to numeric
+```{r, include=FALSE}
+test2$YM=as.numeric(test2$YM)
+ggplot(test2,aes(YM,PMC_Value)) +
+     geom_point(na.rm=TRUE)+
+     theme_bw()+
+     geom_smooth(span=0.05,method='loess',size=1.5)+
+	coord_cartesian(ylim=c(0,50))+
+     theme_bw()
+```
+* Now smoothline is plotted, but they treated year-month as continuous, and output is not what we want.
+
+# solution
+* Put day (15th) to YM value and define it as date 
+```{r}
+test2$YM2=as.Date(paste(substr(test2$YM,1,4),'-',substr(test2$YM,5,6),'-15',sep=''),format='%Y-%m-%d')
+head(test2)
+
+ggplot(test2,aes(YM2,PMC_Value)) +
+     geom_point(na.rm=TRUE)+
+     theme_bw()+
+     geom_smooth(span=0.05,method='loess',size=1.5)+
+	coord_cartesian(ylim=c(0,50))+
+     theme_bw()
+
+```
+
+# Let's make a area plot
+```{r}
+library(dplyr)
+library(reshape2)
+YMData=PMC_DF %>%
+          filter(substr(FIPS_C,1,5)=='06075') %>%
+          group_by(substr(Date,1,7)) %>%
+          summarize(PMC=mean(PMC_Value),PM25=mean(PM25_Value),PM10=mean(PM10_Value))
+names(YMData)[1]=c('Date')
+YMData=mutate(YMData,YM=as.Date(paste(substr(Date,1,4),'-',substr(Date,6,7),'-15',sep=''),format='%Y-%m-%d')) %>%
+     select(-Date)
+YMData2=melt(YMData,id.vars='YM') %>%
+          filter(variable!='PM10')
+
+ggplot(YMData2,aes(YM,value))+
+     geom_area(aes(colour=variable,fill=variable), position = 'stack')+
+     theme_bw()+
+	ggtitle('Trend')+
+	coord_cartesian(ylim=c(0,60))+
+     theme(plot.title=element_text(hjust = 0.5))
+
+```
+
+```{r}
+library(dplyr)
+library(reshape2)
+YMData=PMC_DF %>%
+          filter(substr(FIPS_C,1,5)=='06037') %>%
+          group_by(substr(Date,1,4)) %>%
+          summarize(PMC=mean(PMC_Value),PM25=mean(PM25_Value),PM10=mean(PM10_Value))
+names(YMData)[1]=c('Date')
+YMData=mutate(YMData,YM=as.Date(paste(substr(Date,1,4),'-06-15',sep=''),format='%Y-%m-%d')) %>%
+     select(-Date)
+YMData2=melt(YMData,id.vars='YM') %>%
+          filter(variable!='PM10')
+
+ggplot(YMData2,aes(YM,value))+
+     geom_area(aes(colour=variable,fill=variable), position = 'stack')+
+     theme_bw()+
+	ggtitle('Trend')+
+	coord_cartesian(ylim=c(0,40))+
+     theme(plot.title=element_text(hjust = 0.5))
+
+```
+```{r}
+RatioDF=PMC_DF %>%
+    filter(PM25_Value>0&PMC_Value>0) %>%
+    mutate(PM25_PCT=PM25_Value*100/PM10_Value,PMC_PCT=PMC_Value*100/PM10_Value) %>%
+    filter(substr(FIPS_C,1,5)=='06029') %>%
+    group_by(substr(Date,1,4)) %>%
+    summarize(PMC=mean(PMC_PCT),PM25=mean(PM25_PCT))
+names(RatioDF)[1]=c('Date')
+RatioDF2=mutate(RatioDF,YM=as.Date(paste(substr(Date,1,4),'-06-15',sep=''),format='%Y-%m-%d')) %>%
+    select(-Date) %>%
+    melt(id.vars='YM')
+
+ggplot(RatioDF2,aes(YM,value))+
+     geom_area(aes(colour=variable,fill=variable), position = 'stack')+
+     theme_bw()+
+  	ggtitle('Trend')+
+  	coord_cartesian(ylim=c(0,100))+
+     theme(plot.title=element_text(hjust = 0.5))
+```
+
+```{r}
+
+```
+
