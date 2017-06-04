@@ -7,8 +7,8 @@ output: html_notebook
 ```{r, include=FALSE}
 library(ggplot2)
 #setwd('C:\\Users\\kebisu\\Documents\\Research\\PMCoarse_TLBWCA\\Data')
-setwd('C:\\Users\\ebike\\OneDrive\\Documents\\Research\\PMC_LBW_CA\\Data')
-#setwd('F:\\Research\\PMC_LBW_CA\\PMC_LBW_CA')
+#setwd('C:\\Users\\ebike\\OneDrive\\Documents\\Research\\PMC_LBW_CA\\Data')
+setwd('F:\\Research\\PMC_LBW_CA\\PMC_LBW_CA\\Data')
 load('PMC_DF_20170602.RData')#PMC_DF
 #setwd('C:\\Users\\kebisu\\Documents\\Research\\PMCoarse_TLBWCA\\Data')
 load('PMC_DF_20170602.RData')#PMC_DF
@@ -184,7 +184,7 @@ ggplot(RatioDF2,aes(YM,value))+
 
 ```{r}
 temp=PMC_DF %>% 
-  filter(substr(FIPS_C,1,5)=='06019') %>%
+  filter(substr(FIPS_C,1,5)=='06111') %>%
   mutate(year=substr(Date,1,4)) %>% 
   group_by(year) %>% 
   summarize(PM10=mean(PM10_Value),PM25=mean(PM25_Value),PMC=mean(PMC_Value))
