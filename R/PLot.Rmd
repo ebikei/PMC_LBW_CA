@@ -6,14 +6,12 @@ output: html_notebook
 
 ```{r, include=FALSE}
 library(ggplot2)
-<<<<<<< HEAD
 #setwd('C:\\Users\\kebisu\\Documents\\Research\\PMCoarse_TLBWCA\\Data')
-setwd('F:\\Research\\PMC_LBW_CA\\PMC_LBW_CA')
-load('Data\\PMC_DF_20170602.RData')#PMC_DF
-=======
-setwd('C:\\Users\\kebisu\\Documents\\Research\\PMCoarse_TLBWCA\\Data')
+setwd('C:\\Users\\ebike\\OneDrive\\Documents\\Research\\PMC_LBW_CA\\Data')
+#setwd('F:\\Research\\PMC_LBW_CA\\PMC_LBW_CA')
 load('PMC_DF_20170602.RData')#PMC_DF
->>>>>>> 70dbd0110f1c267d9527a4970f9b1255d6d04369
+#setwd('C:\\Users\\kebisu\\Documents\\Research\\PMCoarse_TLBWCA\\Data')
+load('PMC_DF_20170602.RData')#PMC_DF
 ```
 For now, ignore extreme values.
 Make Plot for Year-Month Trend by using Whole California Data
@@ -148,11 +146,7 @@ ggplot(YMData2,aes(YM,value))+
 library(dplyr)
 library(reshape2)
 YMData=PMC_DF %>%
-<<<<<<< HEAD
-          filter(substr(FIPS_C,1,5)=='06037') %>%
-=======
           filter(substr(FIPS_C,1,5)=='06029') %>%
->>>>>>> 70dbd0110f1c267d9527a4970f9b1255d6d04369
           group_by(substr(Date,1,4)) %>%
           summarize(PMC=mean(PMC_Value),PM25=mean(PM25_Value),PM10=mean(PM10_Value))
 names(YMData)[1]=c('Date')
@@ -167,8 +161,6 @@ ggplot(YMData2,aes(YM,value))+
 	ggtitle('Trend')+
 	coord_cartesian(ylim=c(0,40))+
      theme(plot.title=element_text(hjust = 0.5))
-
-<<<<<<< HEAD
 ```
 ```{r}
 RatioDF=PMC_DF %>%
@@ -193,7 +185,3 @@ ggplot(RatioDF2,aes(YM,value))+
 ```{r}
 
 ```
-
-=======
-```
->>>>>>> 70dbd0110f1c267d9527a4970f9b1255d6d04369
