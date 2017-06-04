@@ -183,5 +183,25 @@ ggplot(RatioDF2,aes(YM,value))+
 ```
 
 ```{r}
+temp=PMC_DF %>% 
+  filter(substr(FIPS_C,1,5)=='06019') %>%
+  mutate(year=substr(Date,1,4)) %>% 
+  group_by(year) %>% 
+  summarize(PM10=mean(PM10_Value),PM25=mean(PM25_Value),PMC=mean(PMC_Value))
 
+ref_value=temp[1,2] %>% 
+  as.numeric()
+
+temp2=temp %>% 
+    mutate(PM25_PCT=PM25*100/ref_value,PMC_PCT=PMC*100/ref_value) %>% 
+    select(year,PM25_PCT,PMC_PCT) %>% 
+    melt(id.vars='year') %>%
+    mutate(YM=as.Date(paste(year,'-06-15',sep=''),format='%Y-%m-%d'))
+
+ggplot(temp2,aes(YM,value))+
+     geom_area(aes(colour=variable,fill=variable), position = 'stack')+
+     theme_bw()+
+  	ggtitle('Trend')+
+  	coord_cartesian(ylim=c(0,100))+
+     theme(plot.title=element_text(hjust = 0.5))
 ```
